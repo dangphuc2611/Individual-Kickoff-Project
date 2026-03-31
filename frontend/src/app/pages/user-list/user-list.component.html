@@ -31,6 +31,8 @@
             <th style="width:25%">Tên</th>
             <th style="width:25%">Email</th>
             <th style="width:15%">Vai trò</th>
+            <th style="width:15%">Đơn vị</th>
+            <th style="width:10%">Trạng thái</th>
             <th style="width:15%">Ngày tạo</th>
             <th style="width:10%; text-align: center">Thao tác</th>
           </tr>
@@ -44,6 +46,10 @@
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
                 {{ user.role }}
               </span>
+            </td>
+            <td class="text-slate-600">{{ user.tenDonVi || '(Trống)' }}</td>
+            <td>
+              <p-tag [value]="user.isActive ? 'Hoạt động' : 'Khóa'" [severity]="user.isActive ? 'success' : 'danger'"></p-tag>
             </td>
             <td class="text-slate-500">{{ user.createdAt ? (user.createdAt | date:'dd/MM/yyyy HH:mm') : '—' }}</td>
             <td class="text-center">
@@ -95,10 +101,32 @@
       }
     </div>
 
+    <!-- Password -->
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-slate-700">Mật khẩu <span *ngIf="!editingUser" class="text-red-500">*</span></label>
+      <input pInputText formControlName="password" type="password" placeholder="Nhập mật khẩu" class="w-full" [ngClass]="{'ng-invalid ng-dirty': f['password'].invalid && f['password'].touched}" />
+      @if (f['password'].invalid && f['password'].touched) {
+        <small class="text-red-500">Mật khẩu phải có ít nhất 6 ký tự.</small>
+      }
+      <small *ngIf="editingUser" class="text-slate-500">Bỏ trống nếu không muốn đổi mật khẩu.</small>
+    </div>
+
     <!-- Role -->
     <div class="flex flex-col gap-2">
       <label class="text-sm font-medium text-slate-700">Vai trò <span class="text-red-500">*</span></label>
-      <p-select formControlName="role" [options]="roleDropdownOptions" [style]="{'width':'100%'}"></p-select>
+      <p-select formControlName="role" [options]="roleDropdownOptions" appendTo="body" [style]="{'width':'100%'}"></p-select>
+    </div>
+
+    <!-- Đơn vị -->
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-slate-700">Đơn vị quản lý</label>
+      <p-select formControlName="donViId" [options]="donViOptions" optionLabel="label" optionValue="value" [filter]="true" filterBy="label" appendTo="body" placeholder="Chọn đơn vị..." [style]="{'width':'100%'}"></p-select>
+    </div>
+
+    <!-- Trạng thái -->
+    <div class="flex items-center gap-2 mt-4">
+      <p-checkbox formControlName="isActive" [binary]="true" inputId="isActive"></p-checkbox>
+      <label for="isActive" class="text-sm font-medium text-slate-700 cursor-pointer">Hoạt động (Cho phép đăng nhập)</label>
     </div>
   </form>
 

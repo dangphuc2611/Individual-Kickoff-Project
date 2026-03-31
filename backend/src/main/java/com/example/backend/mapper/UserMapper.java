@@ -26,7 +26,11 @@ public class UserMapper {
                 .name(user.getName())
                 .email(user.getEmail())
                 .role(user.getRole())
+                .isActive(user.isActive())
+                .donViId(user.getDonVi() != null ? user.getDonVi().getId() : null)
+                .tenDonVi(user.getDonVi() != null ? user.getDonVi().getTenDonVi() : null)
                 .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 

@@ -12,5 +12,9 @@ public class UserResponse {
     private String name;
     private String email;
     private String role;
+    private Long donViId;
+    private String tenDonVi;
+    private Boolean isActive;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

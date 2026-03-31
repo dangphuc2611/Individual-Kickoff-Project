@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
 import { UserService } from '../../core/services/user.service';
+import { DonViService } from '../../core/services/don-vi.service';
 import { User } from '../../core/models/user.model';
 import { Subscription, filter } from 'rxjs';
 
@@ -11,6 +12,8 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
+import { CheckboxModule } from 'primeng/checkbox';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-user-list',
@@ -22,7 +25,9 @@ import { SelectModule } from 'primeng/select';
     DialogModule,
     ButtonModule,
     InputTextModule,
-    SelectModule
+    SelectModule,
+    CheckboxModule,
+    TagModule
   ],
   templateUrl: './user-list.component.html',
 })
@@ -35,13 +40,15 @@ export class UserListComponent implements OnInit, OnDestroy {
   successMsg = '';
 
   userForm: FormGroup;
-  roles = ['ADMIN', 'MANAGER', 'DEVELOPER', 'TESTER'];
+  roles = ['TRUONG_PHONG', 'CBCT', 'THU_TRUONG', 'ADMIN'];
   roleDropdownOptions: any[] = [];
+  donViOptions: { label: string, value: number }[] = [];
 
   private routerSub?: Subscription;
 
   constructor(
     private userService: UserService,
+    private donViService: DonViService,
     private fb: FormBuilder,
     private router: Router,
     private cdr: ChangeDetectorRef,
@@ -49,17 +56,19 @@ export class UserListComponent implements OnInit, OnDestroy {
     this.userForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
+      password: [''],
       role: ['DEVELOPER', Validators.required],
+      donViId: [null],
+      isActive: [true]
     });
 
     this.roleDropdownOptions = this.roles.map(r => ({ label: r, value: r }));
   }
 
   ngOnInit(): void {
-    // Load lần đầu
     this.loadUsers();
+    this.loadUnits();
 
-    // Tải lại mỗi khi điều hướng về trang này (kể cả từ trang khác)
     this.routerSub = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
@@ -71,6 +80,15 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routerSub?.unsubscribe();
+  }
+
+  loadUnits(): void {
+    this.donViService.getAll().subscribe({
+      next: (res) => {
+        this.donViOptions = res.map(d => ({ label: d.tenDonVi, value: d.id }));
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   loadUsers(): void {
@@ -93,14 +111,25 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   openCreate(): void {
     this.editingUser = null;
-    this.userForm.reset({ role: 'DEVELOPER' });
+    this.userForm.reset({ role: 'DEVELOPER', isActive: true });
+    this.userForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+    this.userForm.get('password')?.updateValueAndValidity();
     this.showModal = true;
     this.errorMsg = '';
   }
 
   openEdit(user: User): void {
     this.editingUser = user;
-    this.userForm.patchValue({ name: user.name, email: user.email, role: user.role });
+    this.userForm.patchValue({ 
+      name: user.name, 
+      email: user.email, 
+      role: user.role,
+      donViId: user.donViId,
+      isActive: user.isActive !== undefined ? user.isActive : true,
+      password: '' // empty password for edit
+    });
+    this.userForm.get('password')?.clearValidators();
+    this.userForm.get('password')?.updateValueAndValidity();
     this.showModal = true;
     this.errorMsg = '';
   }
@@ -108,7 +137,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   closeModal(): void {
     this.showModal = false;
     this.editingUser = null;
-    this.userForm.reset({ role: 'DEVELOPER' });
+    this.userForm.reset({ role: 'DEVELOPER', isActive: true });
   }
 
   saveUser(): void {

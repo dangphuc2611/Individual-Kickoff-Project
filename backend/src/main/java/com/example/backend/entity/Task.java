@@ -41,7 +41,7 @@ public class Task {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
-    @Column(name = "due_time")
+    @Column(name = "due_time", columnDefinition = "time without time zone")
     private LocalTime dueTime;
 
     @CreationTimestamp

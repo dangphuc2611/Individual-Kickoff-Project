@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://kickoff-project-production.up.railway.app',
+  apiUrl: 'http://localhost:8080',
 };

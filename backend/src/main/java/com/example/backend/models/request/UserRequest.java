@@ -16,4 +16,10 @@ public class UserRequest {
 
     @NotBlank(message = "Role cannot be blank")
     private String role;
+
+    private String password;
+    
+    private Long donViId;
+    
+    private Boolean isActive;
 }
