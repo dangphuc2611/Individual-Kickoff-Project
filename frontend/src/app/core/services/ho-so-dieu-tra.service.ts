@@ -67,6 +67,10 @@ export class HoSoDieuTraService {
     return this.http.get(`${this.apiUrl}/${id}/files/${fileId}/download`, { responseType: 'blob' });
   }
 
+  deleteFile(fileId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/files/${fileId}`);
+  }
+
   validateImport(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { HoSoAnNinhMangService } from '../../../core/services/ho-so-an-ninh-mang.service';
 import { ActivatedRoute } from '@angular/router';
@@ -100,7 +100,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
                 <p-tabpanel value="2">
                    <div class="bg-white p-6 rounded-xl border border-slate-200">
-                     <app-file-upload [url]="uploadUrl" (onUploadComplete)="fetchFiles()"></app-file-upload>
+                     <app-file-upload [url]="uploadUrl" (onUploadComplete)="refreshData()"></app-file-upload>
                      <div class="mt-8 border-t border-slate-100 pt-6">
                        <h3 class="text-lg font-bold text-slate-700 mb-4">Các tệp đã tải lên</h3>
                        <p-table [value]="files" styleClass="p-datatable-sm">
@@ -109,7 +109,7 @@ import { AuthService } from '../../../core/services/auth.service';
                                   <th>Tên File</th>
                                   <th>Dung lượng</th>
                                   <th>Ngày tải</th>
-                                  <th style="width: 100px; text-align: center">Tải về</th>
+                                  <th style="width: 120px; text-align: center">Thao tác</th>
                               </tr>
                           </ng-template>
                           <ng-template pTemplate="body" let-file>
@@ -118,7 +118,8 @@ import { AuthService } from '../../../core/services/auth.service';
                                   <td>{{ file.fileSize }} Bytes</td>
                                   <td>{{ file.createdAt | date:'short' }}</td>
                                   <td class="text-center">
-                                      <p-button icon="pi pi-download" variant="text" size="small" [rounded]="true" (onClick)="downloadFile(file.id, file.fileName)"></p-button>
+                                      <p-button icon="pi pi-download" variant="text" size="small" [rounded]="true" (onClick)="downloadFile(file.id, file.fileName)" title="Tải xuống"></p-button>
+                                      <p-button *ngIf="authService.canCreate()" icon="pi pi-trash" variant="text" severity="danger" size="small" [rounded]="true" (onClick)="deleteFile(file.id)" title="Xóa file"></p-button>
                                   </td>
                               </tr>
                           </ng-template>
@@ -177,7 +178,8 @@ export class ChiTietAnNinhMangComponent implements OnInit {
     private service: HoSoAnNinhMangService, 
     private route: ActivatedRoute, 
     private location: Location,
-    private authService: AuthService
+    public authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -192,26 +194,48 @@ export class ChiTietAnNinhMangComponent implements OnInit {
       next: (res) => { 
         this.detail = res; 
         this.loading = false; 
-        this.fetchAuditLogs();
-        this.fetchFiles();
-        if(this.canViewLogs()) {
-          this.fetchAccessLogs();
-        }
+        this.refreshData();
       },
       error: () => this.loading = false
     });
   }
 
+  refreshData() {
+    this.fetchAuditLogs();
+    this.fetchFiles();
+    if(this.canViewLogs()) {
+      this.fetchAccessLogs();
+    }
+    this.cdr.detectChanges();
+  }
+
   fetchAuditLogs() {
-    this.service.getAuditLogs(this.id).subscribe(res => this.auditLogs = res || []);
+    this.service.getAuditLogs(this.id).subscribe(res => {
+      this.auditLogs = res || [];
+      this.cdr.detectChanges();
+    });
   }
 
   fetchAccessLogs() {
-    this.service.getAccessLogs(this.id).subscribe(res => this.accessLogs = res || []);
+    this.service.getAccessLogs(this.id).subscribe(res => {
+      this.accessLogs = res || [];
+      this.cdr.detectChanges();
+    });
   }
 
   fetchFiles() {
-    this.service.getFiles(this.id).subscribe(res => this.files = res || []);
+    this.service.getFiles(this.id).subscribe(res => {
+      this.files = res || [];
+      this.cdr.detectChanges();
+    });
+  }
+
+  deleteFile(fileId: number) {
+    if (confirm('Bạn có chắc muốn xóa tệp này?')) {
+      this.service.deleteFile(fileId).subscribe(() => {
+        this.refreshData();
+      });
+    }
   }
 
   downloadFile(fileId: number, fileName: string) {
@@ -233,6 +257,8 @@ export class ChiTietAnNinhMangComponent implements OnInit {
   goBack() { this.location.back(); }
 
   canViewLogs(): boolean {
-    return this.authService.hasRole('TRUONG_PHONG') || this.authService.hasRole('CBCT');
+    return this.authService.hasRole('TRUONG_PHONG') || 
+           this.authService.hasRole('CBCT') || 
+           this.authService.hasRole('ADMIN');
   }
 }
