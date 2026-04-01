@@ -55,16 +55,25 @@ public class ThongTinHinhSuController {
 
     @PostMapping
     public ResponseEntity<ThongTinHinhSuResponse> create(@Valid @RequestBody ThongTinHinhSuRequest req) {
+        if (!SecurityUtils.isManager()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(thongTinHinhSuService.create(req));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ThongTinHinhSuResponse> update(@PathVariable Long id, @Valid @RequestBody ThongTinHinhSuRequest req) {
+        if (!SecurityUtils.isManager()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.ok(thongTinHinhSuService.update(id, req));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!SecurityUtils.isManager()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         thongTinHinhSuService.delete(id);
         return ResponseEntity.noContent().build();
     }

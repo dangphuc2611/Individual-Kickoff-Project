@@ -55,16 +55,25 @@ public class HoSoAnNinhMangController {
 
     @PostMapping
     public ResponseEntity<HoSoAnNinhMangResponse> create(@Valid @RequestBody HoSoAnNinhMangRequest req) {
+        if (!SecurityUtils.isManager()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(hoSoAnNinhMangService.create(req));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<HoSoAnNinhMangResponse> update(@PathVariable Long id, @Valid @RequestBody HoSoAnNinhMangRequest req) {
+        if (!SecurityUtils.isManager()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.ok(hoSoAnNinhMangService.update(id, req));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!SecurityUtils.isManager()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         hoSoAnNinhMangService.delete(id);
         return ResponseEntity.noContent().build();
     }

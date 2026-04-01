@@ -65,4 +65,12 @@ public final class SecurityUtils {
     public static boolean isCbct() {
         return UserRole.CBCT.name().equals(getCurrentUserRole());
     }
+
+    /**
+     * Trưởng phòng, CBCT và ADMIN là người có quyền thêm/sửa/xóa hồ sơ.
+     */
+    public static boolean isManager() {
+        String role = getCurrentUserRole();
+        return UserRole.TRUONG_PHONG.name().equals(role) || UserRole.CBCT.name().equals(role) || "ADMIN".equals(role);
+    }
 }

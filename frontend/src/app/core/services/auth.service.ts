@@ -54,6 +54,13 @@ export class AuthService {
     return user ? user.role?.toUpperCase() === role.toUpperCase() : false;
   }
 
+  canCreate(): boolean {
+    const user = this.currentUserSubject.value;
+    const role = user?.role?.toUpperCase();
+    // Admin, Trưởng phòng, CBCT có quyền thêm/sửa/xóa hồ sơ. Thủ trưởng chỉ được xem.
+    return role === 'TRUONG_PHONG' || role === 'CBCT' || role === 'ADMIN';
+  }
+
   // Giả lập đọc base64 JWT Payload
   private decodeToken(token: string): UserPayload | null {
     try {

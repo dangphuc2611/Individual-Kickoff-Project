@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { AuthService } from '../../../core/services/auth.service';
 
 export interface ColumnDef {
   field: string;
@@ -61,8 +62,8 @@ export interface ColumnDef {
               <ng-container *ngIf="col.type === 'action'">
                 <div class="flex items-center justify-center gap-1">
                   <p-button icon="pi pi-eye" (onClick)="onView.emit(rowData)" variant="text" severity="info" size="small" [rounded]="true" title="Xem chi tiết"></p-button>
-                  <p-button icon="pi pi-pencil" (onClick)="onEdit.emit(rowData)" variant="text" severity="warn" size="small" [rounded]="true" title="Chỉnh sửa"></p-button>
-                  <p-button icon="pi pi-trash" (onClick)="onDelete.emit(rowData)" variant="text" severity="danger" size="small" [rounded]="true" title="Xóa"></p-button>
+                  <p-button *ngIf="authService.canCreate()" icon="pi pi-pencil" (onClick)="onEdit.emit(rowData)" variant="text" severity="warn" size="small" [rounded]="true" title="Chỉnh sửa"></p-button>
+                  <p-button *ngIf="authService.canCreate()" icon="pi pi-trash" (onClick)="onDelete.emit(rowData)" variant="text" severity="danger" size="small" [rounded]="true" title="Xóa"></p-button>
                 </div>
               </ng-container>
 
@@ -93,6 +94,8 @@ export class HoSoDataTableComponent {
   @Output() onView = new EventEmitter<any>();
   @Output() onEdit = new EventEmitter<any>();
   @Output() onDelete = new EventEmitter<any>();
+
+  constructor(public authService: AuthService) {}
 
   // Xử lý hiển thị Label của Badge (Xóa dấu _, viết hoa chữ cái đầu)
   formatBadge(value: string): string {

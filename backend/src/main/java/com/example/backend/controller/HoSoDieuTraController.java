@@ -55,16 +55,25 @@ public class HoSoDieuTraController {
 
     @PostMapping
     public ResponseEntity<HoSoDieuTraResponse> create(@Valid @RequestBody HoSoDieuTraRequest req) {
+        if (!SecurityUtils.isManager()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(hoSoDieuTraService.create(req));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<HoSoDieuTraResponse> update(@PathVariable Long id, @Valid @RequestBody HoSoDieuTraRequest req) {
+        if (!SecurityUtils.isManager()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.ok(hoSoDieuTraService.update(id, req));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!SecurityUtils.isManager()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         hoSoDieuTraService.delete(id);
         return ResponseEntity.noContent().build();
     }

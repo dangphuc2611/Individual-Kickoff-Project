@@ -8,6 +8,7 @@ import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-danh-sach-hinh-su',
@@ -22,9 +23,9 @@ import { FormsModule } from '@angular/forms';
             <p class="text-slate-500 text-sm mt-1">Danh sách thông tin tội phạm, vi phạm pháp luật</p>
           </div>
           <div class="flex gap-2">
-            <p-button label="Thêm mới" icon="pi pi-plus" (onClick)="goToCreate()" severity="primary"></p-button>
+            <p-button *ngIf="authService.canCreate()" label="Thêm mới" icon="pi pi-plus" (onClick)="goToCreate()" severity="primary"></p-button>
             <p-button label="Xuất Excel" icon="pi pi-file-excel" (onClick)="exportExcel()" severity="success"></p-button>
-            <p-button label="Nhập Excel" icon="pi pi-upload" (onClick)="goToImport()" severity="secondary" variant="outlined"></p-button>
+            <p-button *ngIf="authService.canCreate()" label="Nhập Excel" icon="pi pi-upload" (onClick)="goToImport()" severity="secondary" variant="outlined"></p-button>
           </div>
         </div>
 
@@ -79,7 +80,12 @@ export class DanhSachHinhSuComponent implements OnInit {
     { field: 'id', header: 'Thao tác', type: 'action' }
   ];
 
-  constructor(private service: ThongTinHinhSuService, private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private service: ThongTinHinhSuService, 
+    private router: Router, 
+    private cdr: ChangeDetectorRef,
+    public authService: AuthService
+  ) {}
 
   ngOnInit() {}
 
