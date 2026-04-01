@@ -1,6 +1,8 @@
 package com.example.backend.service;
 
 import com.example.backend.models.response.HoSoAuditLogResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -15,4 +17,7 @@ public interface HoSoAuditLogService {
 
     /** Lấy lịch sử chỉnh sửa của 1 hồ sơ — endpoint /:id/audit */
     List<HoSoAuditLogResponse> getAuditsByRecord(Long recordId, String hoSoType);
+
+    /** Lấy toàn bộ lịch sử chỉnh sửa hệ thống */
+    Page<HoSoAuditLogResponse> getAllAudits(Pageable pageable);
 }

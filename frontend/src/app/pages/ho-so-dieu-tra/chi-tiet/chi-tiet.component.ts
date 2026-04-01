@@ -159,7 +159,7 @@ import { AuthService } from '../../../core/services/auth.service';
                         <ng-template pTemplate="header">
                             <tr>
                                 <th>Thời gian</th>
-                                <th>User ID</th>
+                                <th>Người dùng</th>
                                 <th>Hành động</th>
                                 <th>IP Address</th>
                             </tr>
@@ -167,7 +167,12 @@ import { AuthService } from '../../../core/services/auth.service';
                         <ng-template pTemplate="body" let-log>
                             <tr>
                                 <td>{{ log.accessedAt | date:'MM/dd/yyyy HH:mm:ss' }}</td>
-                                <td class="font-mono text-slate-600">{{ log.userId }}</td>
+                                <td class="text-sm">
+                                    <div class="flex flex-col">
+                                        <span class="font-semibold text-slate-800">{{ log.userName || 'Unknown' }}</span>
+                                        <span class="text-xs text-slate-400 font-mono">ID: {{ log.userId }}</span>
+                                    </div>
+                                </td>
                                 <td><p-tag [value]="log.action" [severity]="log.action === 'EXPORT' ? 'warn' : 'info'"></p-tag></td>
                                 <td class="font-mono text-slate-500">{{ log.ipAddress }}</td>
                             </tr>

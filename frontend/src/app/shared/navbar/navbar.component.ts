@@ -1,5 +1,4 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
@@ -9,7 +8,7 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, CommonModule, ButtonModule, MenuModule],
+  imports: [CommonModule, ButtonModule, MenuModule],
   template: `
     <div class="shadow-sm fixed w-full top-0 z-50 bg-white/80 backdrop-blur-lg h-[72px] flex items-center px-4 justify-between border-b border-slate-200 transition-all">
       <div class="flex items-center gap-4">
@@ -17,10 +16,6 @@ import { AuthService } from '../../core/services/auth.service';
         <p-button icon="pi pi-bars" (onClick)="onMenuClick()" variant="text" severity="secondary" [rounded]="true" styleClass="!text-slate-600 hover:!bg-slate-100 transition-colors"></p-button>
       </div>
       <div class="flex items-center gap-2">
-        <p-button *ngIf="isManager" routerLink="/access-logs" title="Lịch sử hệ thống" icon="pi pi-history" variant="text" severity="secondary" [rounded]="true" styleClass="!text-slate-600 hover:!bg-slate-100 transition-colors"></p-button>
-        <p-button icon="pi pi-calendar" variant="text" severity="secondary" [rounded]="true" styleClass="!text-slate-600 hover:!bg-slate-100 transition-colors"></p-button>
-        <p-button icon="pi pi-envelope" variant="text" severity="secondary" [rounded]="true" styleClass="!text-slate-600 hover:!bg-slate-100 transition-colors"></p-button>
-        
         <div class="relative">
           <div (click)="menu.toggle($event)" class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold ml-2 shadow-inner border border-indigo-200 cursor-pointer hover:shadow-md transition-shadow">
             {{ userInitial }}

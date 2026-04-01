@@ -9,6 +9,8 @@ import com.example.backend.security.SecurityUtils;
 import com.example.backend.service.HoSoAuditLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,6 +85,13 @@ public class HoSoAuditLogServiceImpl implements HoSoAuditLogService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<HoSoAuditLogResponse> getAllAudits(Pageable pageable) {
+        return auditLogRepository.findAll(pageable)
+                .map(this::toResponse);
     }
 
     private HoSoAuditLogResponse toResponse(HoSoAuditLog log) {

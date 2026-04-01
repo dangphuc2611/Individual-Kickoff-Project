@@ -93,6 +93,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/access-log/access-log.component').then(m => m.AccessLogComponent),
         canActivate: [roleGuard]
       },
+      {
+        path: 'audit-log',
+        loadComponent: () => import('./pages/audit-log/audit-log.component').then(m => m.AuditLogComponent),
+        canActivate: [roleGuard]
+      },
     ]
   },
 

@@ -5,6 +5,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { DrawerModule } from 'primeng/drawer';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -92,11 +93,55 @@ export class App {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.router.events.subscribe(() => {
       this.isLoginPage = this.router.url.includes('/login');
     });
+  }
+
+  ngOnInit() {
+    this.authService.getCurrentUser().subscribe(user => {
+      this.updateMenu(user);
+    });
+  }
+
+  updateMenu(user: any) {
+    const isAdminOrManager = this.authService.hasRole('TRUONG_PHONG') || this.authService.hasRole('CBCT');
+    
+    const adminItems: MenuItem[] = [
+      { label: 'Bảng Task', icon: 'pi pi-check-square', routerLink: '/tasks' },
+      { label: 'Người dùng', icon: 'pi pi-users', routerLink: '/users' }
+    ];
+
+    if (isAdminOrManager) {
+      adminItems.push({ 
+        label: 'Lịch sử truy cập', 
+        icon: 'pi pi-history', 
+        routerLink: '/access-logs' 
+      });
+      adminItems.push({ 
+        label: 'Lịch sử thay đổi', 
+        icon: 'pi pi-file-edit', 
+        routerLink: '/audit-log' 
+      });
+    }
+
+    this.menuItems = [
+      {
+        label: 'QUẢN TRỊ HỆ THỐNG',
+        items: adminItems
+      },
+      {
+        label: 'ĐIỀU TRA (MOD-04)',
+        items: [
+          { label: 'Hồ sơ Điều tra', icon: 'pi pi-folder-open', routerLink: '/dieu-tra' },
+          { label: 'Thông tin Hình sự', icon: 'pi pi-id-card', routerLink: '/hinh-su' },
+          { label: 'An ninh Mạng', icon: 'pi pi-shield', routerLink: '/an-ninh-mang' }
+        ]
+      }
+    ];
   }
 
   toggleSidebar() {
